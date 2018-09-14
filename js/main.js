@@ -24,6 +24,9 @@ class BoardSquare {
         // 2
         const faceUpElement = this.element.getElementsByClassName('faceup')[0];
 
+        // remove the previous color if it exists
+    faceUpElement.classList.remove(this.color);
+
         // 3
         this.color = color;
         // 4
@@ -51,6 +54,15 @@ class BoardSquare {
     }
 
 }
+
+// RESET button
+
+const resetButton = document.getElementById("reset-button");
+
+resetButton.addEventListener('click', () => {
+    console.log('reset button clicked')
+    resetGame();
+})
 
 function generateHTMLForBoardSquares() {
     const numberOfSquares = 16;
@@ -167,4 +179,28 @@ function squareFlipped(square) {
             b.reset();
         }, 400);
     }
+}
+
+function resetGame() {
+  // 1 Reset the firstFaceupSquare variable back to null.
+  firstFaceupSquare = null;
+
+  // 2 Use the reset() method of BoardSquare to set both isFaceUp and isMatched back to false, as well as setting each square back to facedown.
+  boardSquares.forEach((square) => {
+    square.reset()
+  });
+
+  // 3 Use the setTimeout() function to delay the execution of the code within setTimeout() by 500 milliseconds. We do this because calling the reset() on each BoardSquare object will trigger the .face-container animation transition property. By delaying the shuffling of colors by 500ms, we don't interrupt the flipping animation.
+  setTimeout(() => {
+    // 4 Shuffle and randomize a new order for the color pairs.
+    const randomColorPairs = shuffleColors();
+
+    // 5 Set each BoardSquare object in our boardSquares array with a new color based on our new shuffled colors.
+    for (let i = 0; i < boardSquares.length; i++) {
+      const newColor = randomColorPairs[i];
+      const square = boardSquares[i];
+
+      square.setColor(newColor);
+    }
+  }, 500);
 }
