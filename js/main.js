@@ -8,6 +8,17 @@ class BoardSquare {
         this.isMatched = false;
         this.setColor(color);
     }
+
+    reset() {
+        this.isFaceUp = false;
+        this.isMatched = false;
+        this.element.classList.remove('flipped');
+    }
+    matchFound() {
+        this.isFaceUp = true;
+        this.isMatched = true;
+    }
+
     // 1
     setColor(color) {
         // 2
@@ -19,15 +30,26 @@ class BoardSquare {
         faceUpElement.classList.add(color);
     }
 
-    // 1
     handleEvent(event) {
-        // 2
         switch (event.type) {
             case "click":
+                // 1
+                if (this.isFaceUp || this.isMatched) {
+                    // 2
+                    console.log(this.color + ' square was clicked');
+
+                    return;
+                }
+
                 // 3
-                console.log(this.color + ' square was clicked');
+                this.isFaceUp = true;
+                this.element.classList.add('flipped');
+
+                // 4
+                squareFlipped(this);
         }
     }
+
 }
 
 function generateHTMLForBoardSquares() {
@@ -114,3 +136,35 @@ function setupGame() {
 }
 
 setupGame(); // DO NOT ERASE THIS OR GAME WILL NOT RUN
+
+// 1 First, we create a variable to hold a reference to the first faceup square. This will help us keep track of whether the square is the first or second square to be flipped.
+let firstFaceupSquare = null;
+
+function squareFlipped(square) {
+    // 2 Check if the square is the first square to be flipped faceup. If it is, set a reference to it using the firstFaceupSquare variable and return from the function.
+    if (firstFaceupSquare === null) {
+        firstFaceupSquare = square;
+        return
+    }
+
+    // 3 If the square is the second square to be flipped, check if it's faceup color matches the first faceup square's color.
+    if (firstFaceupSquare.color === square.color) {
+        // 4 If both faceup colors for each square is the same, a match is made. Set both BoardSquare objects to matched using the matchFound() function and clear the firstFaceupSquare variable so the player can keep playing.
+
+        firstFaceupSquare.matchFound();
+        square.matchFound();
+
+        firstFaceupSquare = null;
+    } else {
+        // 5 If the faceup colors aren't the same, reset each square to it's default (facedown) state.
+        const a = firstFaceupSquare;
+        const b = square;
+
+        firstFaceupSquare = null;
+
+        setTimeout(function() {
+            a.reset();
+            b.reset();
+        }, 400);
+    }
+}
